@@ -11,9 +11,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class AnigifCmkApplicationTests {
 
 	@Test
-	public void JMagick이_로드되는지_테스트() throws MagickException{
+	public void test_JMagick로드() throws MagickException{
 		ImageInfo imageInfo = new ImageInfo("/Users/changmin/Projects/hackday/images/masterbaby");
 		Assert.assertEquals(1, imageInfo.getAdjoin());
 	}
+
 
 }
