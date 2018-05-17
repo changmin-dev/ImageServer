@@ -48,4 +48,25 @@ public class GIFProcessService {
         }
 
     }
+    //딜레이의 값? Int면 되나? 코드 중복 제거 필요
+    public void generateAnimatedGif(List<String> inputFileNames, String outputFileName, int delay){
+        try {
+            ImageInfo imageInfo = new ImageInfo(inputFileNames.get(0));
+
+            MagickImage[] images = new MagickImage[inputFileNames.size()];
+            for(int i = 0; i < inputFileNames.size(); ++i){
+                imageInfo = new ImageInfo(inputFileNames.get(i));
+                images[i] = new MagickImage(imageInfo);
+            }
+
+            MagickImage animatedGifImage = new MagickImage(images);
+            animatedGifImage.setDelay(delay);
+            String outputFileDir = fileStoragePath.resolve(outputFileName).toString();
+            animatedGifImage.setFileName(outputFileDir);
+            animatedGifImage.writeImage(imageInfo);
+
+        } catch (MagickException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -27,6 +27,11 @@ public class LocalFileService {
                 .normalize();
     }
 
+    /**
+     * resovle를 통해서 정확한 파일 위치를 찾아 냅니다.
+     * @param fileNames
+     * @return 찾아진 파일의 경로들
+     */
     public List<String> resolveFileNames(List<String> fileNames){
         List<String> output = new ArrayList<>();
         for(String fileName : fileNames){
@@ -36,6 +41,12 @@ public class LocalFileService {
         return output;
     }
 
+
+    /**
+     * 저장소에 있는 파일을 불러 옵니다.
+     * @param fileName
+     * @return
+     */
     public Resource loadFile(String fileName){
         Path filePath = this.fileStoragePath.resolve(fileName).normalize();
         logger.info(filePath.toString());

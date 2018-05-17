@@ -1,5 +1,6 @@
 package phi;
 
+import magick.*;
 import org.junit.*;
 import phi.service.*;
 import phi.properties.*;
@@ -29,5 +30,20 @@ public class TestGifProcessingService {
         gifProcessService.generateAnimatedGif(Arrays.asList(inputFileNames), outputFileDir);
 
         //결과는 직접 확인해야하는 ㅠ 테스트 입니다.
+    }
+
+    @Test
+    public void test_Gif_딜레이를_넣어서_생성() throws MagickException {
+        String[] inputFileNames = new String[294];
+        for(int i = 0; i < inputFileNames.length; ++i){
+            inputFileNames[i] = String.format("./fileStorage/testSplitedFrames/frame_%03d.gif", i);
+        }
+        int delay = 10;
+
+        String outputFileDir = "./fileStorage/animated.gif";
+        gifProcessService.generateAnimatedGif(Arrays.asList(inputFileNames), outputFileDir, 10);
+        ImageInfo imageInfo = new ImageInfo(outputFileDir);
+        MagickImage magickImage = new MagickImage(imageInfo);
+        Assert.assertEquals(delay, magickImage.getDelay());
     }
 }
