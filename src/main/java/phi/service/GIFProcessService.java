@@ -8,6 +8,7 @@ import phi.controller.*;
 import phi.properties.*;
 
 import java.nio.file.*;
+import java.util.*;
 
 /**
  * Created by changmin on 2018. 5. 17..
@@ -24,16 +25,16 @@ public class GIFProcessService {
                 .toAbsolutePath()
                 .normalize();
     }
-
-    public void generateAnimatedGif(String[] inputFileNames, String outputFileName){
+    //과연 리스트로 들어오는게 순서대로 인지 확인 필요
+    public void generateAnimatedGif(List<String> inputFileNames, String outputFileName){
         try {
             //일단 imageInfo로 가지고 오는 정보는 동일하다고 가정 - 추후 바꿔야 할꺼 같은데 일단 기본 기능 구현에 집중
+            //resolve 하기 fileStoragePath.resolve();
+            ImageInfo imageInfo = new ImageInfo(inputFileNames.get(0));
 
-            ImageInfo imageInfo = new ImageInfo(inputFileNames[0]);
-
-            MagickImage[] images = new MagickImage[inputFileNames.length];
-            for(int i = 0; i < inputFileNames.length; ++i){
-                imageInfo = new ImageInfo(inputFileNames[i]);
+            MagickImage[] images = new MagickImage[inputFileNames.size()];
+            for(int i = 0; i < inputFileNames.size(); ++i){
+                imageInfo = new ImageInfo(inputFileNames.get(i));
                 images[i] = new MagickImage(imageInfo);
             }
 

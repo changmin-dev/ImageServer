@@ -5,11 +5,12 @@ import org.springframework.beans.factory.annotation.*;
 import org.springframework.core.io.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import phi.entity.*;
 import phi.service.*;
 
 import javax.servlet.http.*;
 import java.io.*;
-import java.nio.file.*;
+import java.util.*;
 
 /**
  * Created by changmin on 2018. 5. 17..
@@ -34,12 +35,14 @@ public class ImageController {
     //응답은 201인가 200인가? db에 생성하는 건 아니지만 파일을 생성하므로 201
     @PostMapping("/merge-gif")
     //경로를 못찾음
-    public ResponseEntity<Resource> animatedGif(HttpServletRequest request){
+    public ResponseEntity<Resource> animatedGif(@RequestBody GifMergeRequest gifMergeRequest, HttpServletRequest request){
+        List<String> inputFileNames = localFileService.resolveFileNames(gifMergeRequest.getPaths());
+
         //생성할 파일명은 어떻게???
         String outputFileName = "animated.gif";
 
         //일단 테스트로만
-        String[] inputFileNames = jsonParseService.setTestData();
+        //String[] inputFileNames = jsonParseService.setTestData();
 
         gifProcessService.generateAnimatedGif(inputFileNames, outputFileName);
 
@@ -56,6 +59,7 @@ public class ImageController {
                 .body(resource);
     }
 
+    //별도의 서비스?
     private String getCotentType(HttpServletRequest request, Resource resource) {
         String contentType = null;
         try {

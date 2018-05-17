@@ -7,6 +7,7 @@ import org.springframework.stereotype.*;
 
 import java.net.*;
 import java.nio.file.*;
+import java.util.*;
 
 import phi.properties.*;
 import phi.exception.FileNotFoundException;
@@ -24,6 +25,15 @@ public class LocalFileService {
         this.fileStoragePath = Paths.get(fileStorageProperties.getFileStorageDir())
                 .toAbsolutePath()
                 .normalize();
+    }
+
+    public List<String> resolveFileNames(List<String> fileNames){
+        List<String> output = new ArrayList<>();
+        for(String fileName : fileNames){
+            Path filePath = this.fileStoragePath.resolve(fileName).normalize();
+            output.add(filePath.toString());
+        }
+        return output;
     }
 
     public Resource loadFile(String fileName){
