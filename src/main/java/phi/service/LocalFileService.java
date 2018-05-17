@@ -5,12 +5,16 @@ import org.springframework.beans.factory.annotation.*;
 import org.springframework.core.io.*;
 import org.springframework.stereotype.*;
 
+import java.io.*;
 import java.net.*;
 import java.nio.file.*;
 import java.util.*;
 
 import phi.properties.*;
 import phi.exception.FileNotFoundException;
+
+import javax.servlet.http.*;
+
 /**
  * Created by changmin on 2018. 5. 17..
  */
@@ -34,10 +38,13 @@ public class LocalFileService {
      */
     public List<String> resolveFileNames(List<String> fileNames){
         List<String> output = new ArrayList<>();
+
+        //Exception InvalidPathException Bad Request하는
         for(String fileName : fileNames){
             Path filePath = this.fileStoragePath.resolve(fileName).normalize();
             output.add(filePath.toString());
         }
+
         return output;
     }
 
@@ -62,5 +69,25 @@ public class LocalFileService {
             logger.info("MalformedURLException");
             throw new FileNotFoundException("FileNotFound!");
         }
+    }
+
+    /**
+     * MimeType을 찾습니다. 로컬에 있는 파일 타입을 찾으므로 해당서비스라고 판단했습니다.
+     * @param request HTTPServletResuqest의 객체
+     * @param resource 추상화된 파일 정보를 나타내는 객체
+     * @return
+     */
+    public String getCotentType(HttpServletRequest request, Resource resource) {
+        String contentType = null;
+        try {
+            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+        }catch (IOException ex){
+            logger.info("Could not determine file type");
+        }
+
+        if(contentType == null){
+            contentType = "application/octet-stream";
+        }
+        return contentType;
     }
 }

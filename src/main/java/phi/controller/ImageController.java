@@ -45,8 +45,7 @@ public class ImageController {
 
         Resource resource = localFileService.loadFile(outputFileName);
 
-        //다른 서비스를 만들어야?
-        String contentType = getCotentType(request, resource);
+        String contentType = localFileService.getCotentType(request, resource);
 
         //201이 적절한거 같은데 사용법이..
         return ResponseEntity.ok()
@@ -54,20 +53,5 @@ public class ImageController {
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                         "attachment: filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
-    }
-
-    //별도의 서비스?
-    private String getCotentType(HttpServletRequest request, Resource resource) {
-        String contentType = null;
-        try {
-            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-        }catch (IOException ex){
-            logger.info("Could not determine file type");
-        }
-
-        if(contentType == null){
-            contentType = "application/octet-stream";
-        }
-        return contentType;
     }
 }
