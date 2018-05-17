@@ -28,17 +28,17 @@ public class LocalFileService {
 
     public Resource loadFile(String fileName){
         Path filePath = this.fileStoragePath.resolve(fileName).normalize();
-        logger.debug(filePath.toString());
+        logger.info(filePath.toString());
         try {
             Resource resource = new UrlResource(filePath.toUri());
             if(resource.exists()){
                 return resource;
             }else{
-                logger.debug("!resource.exist()");
+                logger.info("!resource.exist()");
                 throw new FileNotFoundException("FileNotFound!");
             }
         } catch (MalformedURLException e) {
-            logger.debug("MalformedURLException");
+            logger.info("MalformedURLException");
             throw new FileNotFoundException("FileNotFound!");
         }
     }
