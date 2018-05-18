@@ -34,22 +34,18 @@ public class ImageController {
 
     //응답은 201인가 200인가? db에 생성하는 건 아니지만 파일을 생성하므로 201
     @PostMapping("/merge-gif")
-    //경로를 못찾음
     public ResponseEntity<Resource> animatedGif(@RequestBody GifMergeRequest gifMergeRequest, HttpServletRequest request){
         List<String> inputFileNames = localFileService.resolveFileNames(gifMergeRequest.getPaths());
+        int delay = Integer.parseInt(gifMergeRequest.getDelay());
 
-        //생성할 파일명은 어떻게???
+        //생성할 파일명은 어떻게??? 일단 파일 경로 제공은 하지 않으니
         String outputFileName = "animated.gif";
 
-        //일단 테스트로만
-        //String[] inputFileNames = jsonParseService.setTestData();
-
-        gifProcessService.generateAnimatedGif(inputFileNames, outputFileName);
+        gifProcessService.generateAnimatedGif(inputFileNames, outputFileName, delay);
 
         Resource resource = localFileService.loadFile(outputFileName);
 
-        //다른 서비스를 만들어야?
-        String contentType = getCotentType(request, resource);
+        String contentType = localFileService.getCotentType(request, resource);
 
         //201이 적절한거 같은데 사용법이..
         return ResponseEntity.ok()
@@ -57,20 +53,5 @@ public class ImageController {
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                         "attachment: filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
-    }
-
-    //별도의 서비스?
-    private String getCotentType(HttpServletRequest request, Resource resource) {
-        String contentType = null;
-        try {
-            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-        }catch (IOException ex){
-            logger.info("Could not determine file type");
-        }
-
-        if(contentType == null){
-            contentType = "application/octet-stream";
-        }
-        return contentType;
     }
 }
