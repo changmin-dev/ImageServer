@@ -11,6 +11,7 @@ import phi.exception.FileNotFoundException;
 import phi.service.*;
 
 import javax.servlet.http.*;
+import java.text.*;
 import java.util.*;
 
 /**
@@ -44,8 +45,10 @@ public class ImageController {
             List<String> inputFileNames = localFileService.resolveFileNames(gifMergeRequest.getPaths());
             int delay = Integer.parseInt(gifMergeRequest.getDelay());
             //생성할 파일명은 어떻게??? 일단 파일 경로 제공은 하지 않으니
-            String outputFileName = "animated.gif";
-
+            //String outputFileName = "animated.gif";
+            String outputFileName = new SimpleDateFormat( "yyyy.MM.dd HH:mm:ss")
+                                        .format(new Date())
+                                        .toString() + ".gif";
             gifProcessService.generateAnimatedGif(inputFileNames, outputFileName, delay);
 
             Resource resource = localFileService.loadFile(outputFileName);
