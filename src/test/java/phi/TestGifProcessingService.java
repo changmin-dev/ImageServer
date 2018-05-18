@@ -20,17 +20,6 @@ public class TestGifProcessingService {
         fileStorageProperties.setFileStorageDir("fileStorage");
         gifProcessService = new GIFProcessService(fileStorageProperties);
     }
-    @Test
-    public void test_Gif생성(){
-        String[] inputFileNames = new String[294];
-        for(int i = 0; i < inputFileNames.length; ++i){
-            inputFileNames[i] = String.format("./fileStorage/testSplitedFrames/frame_%03d.gif", i);
-        }
-        String outputFileDir = "./fileStorage/testOutputs/animated.gif";
-        gifProcessService.generateAnimatedGif(Arrays.asList(inputFileNames), outputFileDir);
-
-        //결과는 직접 확인해야하는 ㅠ 테스트 입니다.
-    }
 
     @Test
     public void test_Gif_딜레이를_넣어서_생성() throws MagickException {
