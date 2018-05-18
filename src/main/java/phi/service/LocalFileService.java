@@ -43,6 +43,11 @@ public class LocalFileService {
 
         try {
             for (String fileName : fileNames) {
+                File file = new File(fileName);
+                if(!file.isFile()) {
+                    throw new FileNotFoundException("존재하지 않는 파일 입니다.");
+                }
+
                 Path filePath = this.fileStoragePath.resolve(fileName).normalize();
                 output.add(filePath.toString());
             }
@@ -72,11 +77,11 @@ public class LocalFileService {
                 return resource;
             }else{
                 logger.info("!resource.exist()");
-                throw new FileNotFoundException("FileNotFound!");
+                throw new FileNotFoundException("File Not Found!");
             }
         } catch (MalformedURLException e) {
             logger.info("MalformedURLException");
-            throw new FileNotFoundException("FileNotFound!");
+            throw new FileNotFoundException("File Not Found!");
         }
     }
 

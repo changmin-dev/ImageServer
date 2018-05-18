@@ -49,7 +49,10 @@ public class ImageController {
             String outputFileName = new SimpleDateFormat( "yyyy.MM.dd HH:mm:ss")
                                         .format(new Date())
                                         .toString() + ".gif";
-            gifProcessService.generateAnimatedGif(inputFileNames, outputFileName, delay);
+
+            boolean isSucess = gifProcessService.generateAnimatedGif(inputFileNames, outputFileName, delay);
+            if(!isSucess)
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 
             Resource resource = localFileService.loadFile(outputFileName);
 
