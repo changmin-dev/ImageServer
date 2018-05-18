@@ -1,14 +1,20 @@
 package phi.service;
 
-import magick.*;
-import org.slf4j.*;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.stereotype.*;
-import phi.controller.*;
-import phi.properties.*;
+import magick.ImageInfo;
+import magick.MagickImage;
+import magick.MagickException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.nio.file.*;
-import java.util.*;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+
+import phi.properties.FileStorageProperties;
+import phi.exception.FileNotFoundException;
 
 /**
  * Created by changmin on 2018. 5. 17..
@@ -32,7 +38,9 @@ public class GIFProcessService {
             //resolve 하기 fileStoragePath.resolve();
             ImageInfo imageInfo = new ImageInfo(inputFileNames.get(0));
 
+            //파일 정보, 이미지 정보가 다른 경우?
             MagickImage[] images = new MagickImage[inputFileNames.size()];
+            ImageInfo[] imageInfos = new ImageInfo[inputFileNames.size()];
             for(int i = 0; i < inputFileNames.size(); ++i){
                 imageInfo = new ImageInfo(inputFileNames.get(i));
                 images[i] = new MagickImage(imageInfo);
@@ -52,20 +60,25 @@ public class GIFProcessService {
     public void generateAnimatedGif(List<String> inputFileNames, String outputFileName, int delay){
         try {
             ImageInfo imageInfo = new ImageInfo(inputFileNames.get(0));
-
+            //파일 정보, 이미지 정보가 다른 경우?
             MagickImage[] images = new MagickImage[inputFileNames.size()];
             for(int i = 0; i < inputFileNames.size(); ++i){
-                imageInfo = new ImageInfo(inputFileNames.get(i));
-                images[i] = new MagickImage(imageInfo);
+                File file = new File(inputFileNames.get(i));
+                if(file.isFile()){
+                    imageInfo = new ImageInfo(inputFileNames.get(i));
+                    images[i] = new MagickImage(imageInfo);
+                }else {
+                    throw new FileNotFoundException("Can not find file : " + inputFileNames.get(i));
+                }
             }
 
             MagickImage animatedGifImage = new MagickImage(images);
-            animatedGifImage.setDelay(delay);
             String outputFileDir = fileStoragePath.resolve(outputFileName).toString();
+            animatedGifImage.setDelay(delay);
             animatedGifImage.setFileName(outputFileDir);
             animatedGifImage.writeImage(imageInfo);
-
-        } catch (MagickException e) {
+        }catch (MagickException e) {
+            //MagickException
             e.printStackTrace();
         }
     }
