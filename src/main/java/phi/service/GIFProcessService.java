@@ -1,14 +1,18 @@
 package phi.service;
 
 import magick.*;
-import org.slf4j.*;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.stereotype.*;
-import phi.controller.*;
-import phi.properties.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.nio.file.*;
-import java.util.*;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+
+import phi.exception.*;
+import phi.properties.FileStorageProperties;
 
 /**
  * Created by changmin on 2018. 5. 17..
@@ -25,48 +29,34 @@ public class GIFProcessService {
                 .toAbsolutePath()
                 .normalize();
     }
-    //과연 리스트로 들어오는게 순서대로 인지 확인 필요
-    public void generateAnimatedGif(List<String> inputFileNames, String outputFileName){
-        try {
-            //일단 imageInfo로 가지고 오는 정보는 동일하다고 가정 - 추후 바꿔야 할꺼 같은데 일단 기본 기능 구현에 집중
-            //resolve 하기 fileStoragePath.resolve();
-            ImageInfo imageInfo = new ImageInfo(inputFileNames.get(0));
 
-            MagickImage[] images = new MagickImage[inputFileNames.size()];
-            for(int i = 0; i < inputFileNames.size(); ++i){
-                imageInfo = new ImageInfo(inputFileNames.get(i));
-                images[i] = new MagickImage(imageInfo);
-            }
-
-            MagickImage animatedGifImage = new MagickImage(images);
-            String outputFileDir = fileStoragePath.resolve(outputFileName).toString();
-            animatedGifImage.setFileName(outputFileDir);
-            animatedGifImage.writeImage(imageInfo);
-
-        } catch (MagickException e) {
-            e.printStackTrace();
-        }
-
-    }
     //딜레이의 값? Int면 되나? 코드 중복 제거 필요
-    public void generateAnimatedGif(List<String> inputFileNames, String outputFileName, int delay){
+    public boolean generateAnimatedGif(List<String> inputFileNames, String outputFileName, int delay){
         try {
             ImageInfo imageInfo = new ImageInfo(inputFileNames.get(0));
-
+            //파일 정보, 이미지 정보가 다른 경우?
             MagickImage[] images = new MagickImage[inputFileNames.size()];
             for(int i = 0; i < inputFileNames.size(); ++i){
                 imageInfo = new ImageInfo(inputFileNames.get(i));
-                images[i] = new MagickImage(imageInfo);
+                try {
+                    images[i] = new MagickImage(imageInfo);
+                }catch (MagickApiException ex){
+                    //throw new InvalidRequestPathException("이미지를 불러오는데 문제가 있습니다. " + imageInfo.getFileName());
+                    return false;
+                }
             }
 
             MagickImage animatedGifImage = new MagickImage(images);
-            animatedGifImage.setDelay(delay);
             String outputFileDir = fileStoragePath.resolve(outputFileName).toString();
+            animatedGifImage.setDelay(delay);
             animatedGifImage.setFileName(outputFileDir);
             animatedGifImage.writeImage(imageInfo);
 
-        } catch (MagickException e) {
+            return true;
+        }catch (MagickException e) {
+            //MagickException
             e.printStackTrace();
+            return false;
         }
     }
 }
