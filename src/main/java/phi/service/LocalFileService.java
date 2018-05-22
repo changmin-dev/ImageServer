@@ -43,12 +43,13 @@ public class LocalFileService {
 
         try {
             for (String fileName : fileNames) {
+                Path filePath = this.fileStoragePath.resolve(fileName).normalize();
+
                 File file = new File(fileName);
                 if(!file.isFile()) {
                     throw new FileNotFoundException("존재하지 않는 파일 입니다.");
                 }
 
-                Path filePath = this.fileStoragePath.resolve(fileName).normalize();
                 output.add(filePath.toString());
             }
         }catch (InvalidPathException ex) {
