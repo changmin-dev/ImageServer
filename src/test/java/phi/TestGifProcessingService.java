@@ -5,6 +5,7 @@ import org.junit.*;
 import phi.service.*;
 import phi.properties.*;
 
+import java.nio.file.*;
 import java.util.*;
 
 /**
@@ -13,26 +14,32 @@ import java.util.*;
  */
 public class TestGifProcessingService {
     GIFProcessService gifProcessService;
-    @org.junit.Before
-    public void before(){
-        //일단 테스트의 경우 Spring 관련해서 설정하는 것을 몰라서 이런 방법으로 했습니다.
-        FileStorageProperties fileStorageProperties = new FileStorageProperties();
-        fileStorageProperties.setFileStorageDir("fileStorage");
-        gifProcessService = new GIFProcessService(fileStorageProperties);
-    }
 
     @Test
     public void test_Gif_딜레이를_넣어서_생성() throws MagickException {
-        String[] inputFileNames = new String[294];
-        for(int i = 0; i < inputFileNames.length; ++i){
-            inputFileNames[i] = String.format("./fileStorage/testSplitedFrames/frame_%03d.gif", i);
-        }
-        int delay = 10;
+        String storage = "fileStorage";
+        FileStorageProperties fileStorageProperties = new FileStorageProperties();
+        fileStorageProperties.setFileStorageDir(storage);
+        gifProcessService = new GIFProcessService(fileStorageProperties);
+        Path pathResolver = Paths.get(storage)
+                .toAbsolutePath()
+                .normalize();
 
-        String outputFileDir = "./fileStorage/animated.gif";
-        gifProcessService.generateAnimatedGif(Arrays.asList(inputFileNames), outputFileDir, 10);
+        List<String> inputFileNames = new ArrayList<>();
+        for(int i = 0; i < 10; ++i){
+            String inputFileName = pathResolver.resolve(String.format("/testFrames/frame_%03d.gif", i))
+                                                .toString();
+            inputFileNames.add(inputFileName);
+        }
+
+        int delay = 10;
+        String outputFileName = "testAnimated.gif";
+        gifProcessService.generateAnimatedGif(inputFileNames, outputFileName, delay);
+
+        String outputFileDir = pathResolver.resolve(outputFileName).toString();
         ImageInfo imageInfo = new ImageInfo(outputFileDir);
         MagickImage magickImage = new MagickImage(imageInfo);
+
         Assert.assertEquals(delay, magickImage.getDelay());
     }
 }

@@ -1,6 +1,8 @@
 package phi;
 
 import org.junit.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.boot.context.properties.*;
 import phi.properties.*;
 import phi.service.*;
 
@@ -9,22 +11,18 @@ import java.util.*;
 /**
  * Created by changmin on 2018. 5. 18..
  */
+@ConfigurationProperties("FileStorageProperties.class")
 public class TestLocalFileService {
-    LocalFileService localFileService;
 
-    @Before
-    public void before(){
-        //일단 테스트의 경우 Spring 관련해서 설정하는 것을 몰라서 이런 방법으로 했습니다.
-        FileStorageProperties fileStorageProperties = new FileStorageProperties();
-        fileStorageProperties.setFileStorageDir("fileStorage");
-        LocalFileService localFileService = new LocalFileService(fileStorageProperties);
-    }
+    LocalFileService localFileService;
 
     @Test
     public void test_파일경로를_찾아내는지_확인(){
+        FileStorageProperties fileStorageProperties = new FileStorageProperties();
+        fileStorageProperties.setFileStorageDir("fileStorage");
+        LocalFileService localFileService = new LocalFileService(fileStorageProperties);
         List<String> names = new ArrayList<>();
-        names.add("testSplitedFrames/frame_000.gif");
-        names.add("animated.gif");
+        names.add("testFrames/frame_000.gif");
         localFileService.resolveFileNames(names);
     }
 }
