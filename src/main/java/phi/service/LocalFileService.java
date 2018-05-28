@@ -45,7 +45,7 @@ public class LocalFileService {
             for (String fileName : fileNames) {
                 Path filePath = this.fileStoragePath.resolve(fileName).normalize();
 
-                File file = new File(fileName);
+                File file = new File(filePath.toString());
                 if(!file.isFile()) {
                     throw new FileNotFoundException("존재하지 않는 파일 입니다.");
                 }
