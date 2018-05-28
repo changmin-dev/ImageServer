@@ -27,7 +27,7 @@ public class TestGifProcessingService {
 
         List<String> inputFileNames = new ArrayList<>();
         for(int i = 0; i < 10; ++i){
-            String inputFileName = pathResolver.resolve(String.format("/testFrames/frame_%03d.gif", i))
+            String inputFileName = pathResolver.resolve(String.format("./testFrames/frame_%03d.gif", i))
                                                 .toString();
             inputFileNames.add(inputFileName);
         }

@@ -33,11 +33,12 @@ public class GIFProcessService {
     //딜레이의 값? Int면 되나? 코드 중복 제거 필요
     public boolean generateAnimatedGif(List<String> inputFileNames, String outputFileName, int delay){
         try {
-            ImageInfo imageInfo = new ImageInfo(inputFileNames.get(0));
+            ImageInfo imageInfo = new ImageInfo(fileStoragePath.resolve(inputFileNames.get(0)).toAbsolutePath().normalize().toString());
             //파일 정보, 이미지 정보가 다른 경우?
             MagickImage[] images = new MagickImage[inputFileNames.size()];
             for(int i = 0; i < inputFileNames.size(); ++i){
-                imageInfo = new ImageInfo(inputFileNames.get(i));
+                String resovedFilename = fileStoragePath.resolve(inputFileNames.get(0)).toAbsolutePath().normalize().toString();
+                imageInfo = new ImageInfo(resovedFilename);
                 try {
                     images[i] = new MagickImage(imageInfo);
                 }catch (MagickApiException ex){
